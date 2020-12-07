@@ -31,5 +31,21 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             return roomPrice + servicesPrice;
             
         }
+
+        //public void Percentage(int usrRoomNo)
+        //{
+        //    //TimeSpan timeSpan = usrLDate - usrADate;
+        //    Console.WriteLine(timeSpan.TotalDays + " dage");
+        //    Console.WriteLine(CalculateAmount(usrRoomNo));
+        //    if (timeSpan.TotalDays >= 7)
+        //    {
+        //        double PriceForRoom = CalculateAmount(usrRoomNo) * timeSpan.TotalDays;
+        //        Console.WriteLine(PriceForRoom * (90 / 100));
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine(CalculateAmount(usrRoomNo) * timeSpan.TotalDays);
+        //    }
+        //}
     }
 }

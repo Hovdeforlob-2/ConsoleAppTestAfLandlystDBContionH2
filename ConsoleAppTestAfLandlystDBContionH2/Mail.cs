@@ -23,8 +23,6 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             SmtpClient client = new SmtpClient("smtp.gmail.com",465);
             SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
             SmtpServer.Credentials = new System.Net.NetworkCredential("duniniki@outlook.dk", "Spason123");
-            // Credentials are necessary if the server requires the client
-            // to authenticate before it will send email on the client's behalf.
             client.UseDefaultCredentials = true;
             client.Send(message);
             

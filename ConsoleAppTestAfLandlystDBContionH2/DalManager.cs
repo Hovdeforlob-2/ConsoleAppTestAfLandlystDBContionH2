@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using System.Data;
+using System.Configuration;
 
 
 
@@ -13,13 +14,13 @@ namespace ConsoleAppTestAfLandlystDBContionH2
 {
     public static class DalManager
     {
-        private static string cs = @"Data Source=DATABASESEVER20;Initial Catalog=Test3;Persist Security Info=True;User ID=sa;Password=Kode123!";
+        //private static string cs = @"Data Source=DATABASESEVER20;Initial Catalog=Test3;Persist Security Info=True;User ID=sa;Password=Kode123!";
 
         public static List<Room> GetRooms(string ServiceYesOrNo, string service)
         {
             List<Room> rooms = new List<Room>();
 
-            using (SqlConnection connection = new SqlConnection(cs))
+            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {
                 SqlCommand cmd;
                 connection.Open();
@@ -61,7 +62,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         {
             List<Booking> bookings = new List<Booking>();
 
-            using (SqlConnection connection = new SqlConnection(cs))
+            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {
                 connection.Open();
 
@@ -87,6 +88,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         }
 
         /// <summary>
+        /// i denne metode bruger jeg dapper
         /// BookingNo, CheckIn, CheckOut, GuestsID
         /// </summary>
         /// <param name="bookingNo"></param>
@@ -95,7 +97,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         /// <param name="guestsId"></param>
         public static void SetBookings(DateTime checkIn, DateTime checkOut, int guestsId)
         {
-            using (IDbConnection connection = new SqlConnection(cs))
+            using (IDbConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {              
                 List<Booking> bookings = new List<Booking>();
 
@@ -111,7 +113,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         {
             List<TotalAmount> amounts = new List<TotalAmount>();
 
-            using (SqlConnection connection = new SqlConnection(cs))
+            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand($@"select Room.Price from Room
@@ -139,7 +141,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         {
             List<TotalAmount> amounts = new List<TotalAmount>();
 
-            using (SqlConnection connection = new SqlConnection(cs))
+            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {
                 connection.Open();
 
@@ -164,6 +166,47 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             return amounts;
         }
 
+        /// <summary>
+        /// i denne metode bruger jeg dapper
+        /// </summary>
+        /// <param name="bookingNo"></param>
+        /// <param name="roomNo"></param>
+        public static void SetRoomQuantity(int bookingNo, int roomNo)
+        {
+            using (IDbConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
+            {
+                List<RoomQuantity> roomQuantities = new List<RoomQuantity>();
+
+                roomQuantities.Add(new RoomQuantity { BookingNo = bookingNo, RoomNo = roomNo});
+
+                connection.Execute("dbo.AddRoomQuantity  @BookingNo,@RoomNo", roomQuantities);
+
+            }
+
+        }
+
+
+        /// <summary>
+        /// i denne metode bruger jeg dapper
+        /// GuestsID, ForeName, LastName, Address, Email, TelephoneNo, ZipCode
+        /// </summary>
+        /// <param name="bookingNo"></param>
+        /// <param name="checkIn"></param>
+        /// <param name="checkOut"></param>
+        /// <param name="guestsId"></param>
+        public static void SetGuests(string foreName, string lastName, string address, string email, int telephoneNo, int zipCode)
+        {
+            using (IDbConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
+            {
+                List<Guests> guests = new List<Guests>();
+
+                guests.Add(new Guests {ForeName = foreName, LastName = lastName, Address = address, Email = email, TelefonNo = telephoneNo, ZipCode = zipCode });
+
+                connection.Execute("dbo.AddNewGuests @Forename,@Lastname,@Address,@Email,@TelefonNo,@ZipCode", guests);
+
+            }
+
+        }
     }
 }
 

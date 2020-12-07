@@ -28,5 +28,11 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             return DalManager.GetServicesPrice(roomNo);
 
         }
+
+        //public static List<RoomQuantity> SetRoomQuantities(int bookingNo, int roomNo)
+        //{
+        //    return DalManager.SetRoomQuantity(bookingNo, roomNo);
+
+        //}
     }
 }
