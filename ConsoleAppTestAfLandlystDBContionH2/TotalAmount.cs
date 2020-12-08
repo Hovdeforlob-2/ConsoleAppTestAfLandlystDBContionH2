@@ -12,9 +12,9 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         public int RoomPrice { get; set; }
         public int ServicePrice { get; set; }
 
-        public int CalculateAmount(int roomNumber)
+        private int CalculateAmount(int roomNumber)
         {
-            HotelManager.GetRoomPrice(100);
+            HotelManager.GetRoomPrice(roomNumber);
 
             int servicesPrice = 0;
             foreach (TotalAmount item in HotelManager.GetServicePrice(roomNumber))
@@ -32,20 +32,24 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             
         }
 
-        //public void Percentage(int usrRoomNo)
-        //{
-        //    //TimeSpan timeSpan = usrLDate - usrADate;
-        //    Console.WriteLine(timeSpan.TotalDays + " dage");
-        //    Console.WriteLine(CalculateAmount(usrRoomNo));
-        //    if (timeSpan.TotalDays >= 7)
-        //    {
-        //        double PriceForRoom = CalculateAmount(usrRoomNo) * timeSpan.TotalDays;
-        //        Console.WriteLine(PriceForRoom * (90 / 100));
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine(CalculateAmount(usrRoomNo) * timeSpan.TotalDays);
-        //    }
-        //}
+        public decimal Percentage(DateTime usrADate, DateTime usrLDate, int usrRoomNo)
+        {
+            Booking booking = new Booking();
+            TimeSpan timeSpan = usrLDate - usrADate;
+            Console.WriteLine(timeSpan.TotalDays + " dage");
+            Console.WriteLine(CalculateAmount(usrRoomNo));
+            if (timeSpan.TotalDays >= 7)
+            {
+                double PriceForRoom = CalculateAmount(usrRoomNo) * timeSpan.TotalDays;
+                //Console.WriteLine(Convert.ToDecimal(PriceForRoom) * (decimal.Divide(90, 100)));
+                decimal PriceWithProcentage = Convert.ToDecimal(PriceForRoom) * (decimal.Divide(90, 100));
+                return PriceWithProcentage;
+            }
+            else
+            {
+                //Console.WriteLine(CalculateAmount(usrRoomNo) * timeSpan.TotalDays);
+                return Convert.ToDecimal(CalculateAmount(usrRoomNo) * timeSpan.TotalDays);
+            }
+        }
     }
 }

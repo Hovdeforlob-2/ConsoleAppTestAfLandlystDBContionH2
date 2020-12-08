@@ -207,6 +207,34 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             }
 
         }
+
+        public static List<Booking> GetDate(int bookingNo)
+        {
+            List<Booking> bookings = new List<Booking>();
+
+            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
+            {
+                connection.Open();
+
+                SqlCommand cmd = new SqlCommand($@"select dbo.Booking.CheckIn, dbo.Booking.CheckOut from Booking 
+                where BookingNo = {bookingNo}", connection);
+                SqlDataReader dataReader = cmd.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    //BookingNo, CheckIn, CheckOut, GuestsID
+                    DateTime checkIn = (DateTime)dataReader["CheckIn"];
+                    DateTime checkOut = (DateTime)dataReader["CheckOut"];
+
+                    Booking booking = new Booking()
+                    { CheckIn = checkIn, CheckOut = checkOut };
+
+                    bookings.Add(booking);
+                }
+            }
+
+            return bookings;
+        }
     }
 }
 
