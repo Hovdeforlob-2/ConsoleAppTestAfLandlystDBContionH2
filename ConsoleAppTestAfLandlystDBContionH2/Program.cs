@@ -11,37 +11,43 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         static void Main(string[] args)
         {
             Console.WriteLine("// START");
-            //DalManager.SetGuests("Per", "jenson", "test no.2", "Gtest@test.com", 11223344, 4800);
-            //Console.WriteLine("vil du have en særlid service : ja|nej");
-            //string usrServiceYesOrNo = Console.ReadLine();
-            //string usrService = "";
-            //if (usrServiceYesOrNo == "ja")
-            //{
-            //    Console.WriteLine("hvilken service vil du have: ");
-            //    usrService = Console.ReadLine();
-            //}
+            //DalManager.SetGuests("bo", "hansen", "test no.2", "Gtest@test.com", 11223344, 4800);
+            Console.WriteLine("vil du have en særlid service : ja|nej");
+            string usrServiceYesOrNo = Console.ReadLine();
+            string usrService = "";
+            if (usrServiceYesOrNo == "ja")
+            {
+                Console.WriteLine("hvilken service vil du have: ");
+                usrService = Console.ReadLine();
+            }
 
-            //List<Room> rooms = HotelManager.GetRooms(usrServiceYesOrNo, usrService);
+            List<Room> rooms = HotelManager.GetRooms(usrServiceYesOrNo, usrService);
 
-            //Console.WriteLine("Room No | Price");
-            //foreach (Room item in rooms)
-            //{
-            //    Console.WriteLine("  " + item.RoomNo + "       " + item.Price);
-            //}
+            Console.WriteLine("Room No | Price");
+            foreach (Room item in rooms)
+            {
+                Console.WriteLine("  " + item.RoomNo + "       " + item.Price);
+            }
+
+            List<Booking> booking = DalManager.GetRoomInUse(usrServiceYesOrNo);
+            Console.WriteLine("Room No in use");
+            foreach (Booking item in booking)
+            {
+                Console.WriteLine(item.RoomNo );
+            }
 
 
+            //Console.WriteLine("hvilken dato for ankomst :");
+            //DateTime usrADate = DateTime.Parse(Console.ReadLine());
+            //Console.WriteLine("hvilken hjem dato :");
+            //DateTime usrLDate = DateTime.Parse(Console.ReadLine());
+            //Console.WriteLine("hvilken kunde numer :");
+            //int usrCustomerNo = Int32.Parse(Console.ReadLine());
+            //Console.WriteLine("hvilken vælget værlse :");
+            //int usrRoomNo = Int32.Parse(Console.ReadLine());
 
-            Console.WriteLine("hvilken dato for ankomst :");
-            DateTime usrADate = DateTime.Parse(Console.ReadLine());
-            Console.WriteLine("hvilken hjem dato :");
-            DateTime usrLDate = DateTime.Parse(Console.ReadLine());
-            Console.WriteLine("hvilken kunde numer :");
-            int usrCustomerNo = Int32.Parse(Console.ReadLine());
-        /*    DalManager.SetBookings(usrADate, usrLDate, usrCustomerNo);*/ // using the storde procedureder addbooking
-          
-            Console.WriteLine("hvilken vælget værlse :");
-            int usrRoomNo = Int32.Parse(Console.ReadLine());
-            Console.WriteLine("den samlet pris er : ");
+            //DalManager.SetBookings(usrADate, usrLDate, usrCustomerNo, usrRoomNo);// using the storde procedureder addbooking
+
 
             #region totalprice
             ////TotalAmount totalAmount = new TotalAmount();
@@ -59,10 +65,10 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             ////{
             ////    Console.WriteLine(totalAmount.CalculateAmount(usrRoomNo) * timeSpan.TotalDays);
             ////}
-            #endregion 
-
-            TotalAmount totalAmount = new TotalAmount();
-            Console.WriteLine(totalAmount.Percentage(usrADate, usrLDate, usrRoomNo));
+            #endregion
+            //Console.WriteLine("den samlet pris er : ");
+            //TotalAmount totalAmount = new TotalAmount();
+            //Console.WriteLine(totalAmount.Percentage(usrADate, usrLDate, usrRoomNo));
 
             //DalManager.SetRoomQuantity(36,201);
 

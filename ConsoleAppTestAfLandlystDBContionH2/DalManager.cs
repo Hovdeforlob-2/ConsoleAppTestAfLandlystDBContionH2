@@ -39,12 +39,12 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                     where dbo.Room.Cleaned = 'true';", connection);
                 }
 
-               SqlDataReader dataReader = cmd.ExecuteReader();
-                
+                SqlDataReader dataReader = cmd.ExecuteReader();
+
 
                 while (dataReader.Read())
                 {
-                    // RoomNo, Cleaned, Price
+                    // RoomNo, Price
                     int roomNo = (int)dataReader["RoomNo"];
                     int price = (int)dataReader["Price"];
 
@@ -95,15 +95,15 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         /// <param name="checkIn"></param>
         /// <param name="checkOut"></param>
         /// <param name="guestsId"></param>
-        public static void SetBookings(DateTime checkIn, DateTime checkOut, int guestsId)
+        public static void SetBookings(DateTime checkIn, DateTime checkOut, int guestsId, int roomNo)
         {
             using (IDbConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
-            {              
+            {
                 List<Booking> bookings = new List<Booking>();
 
-                bookings.Add(new Booking {CheckIn = checkIn, CheckOut = checkOut, GuestsID = guestsId });
+                bookings.Add(new Booking { CheckIn = checkIn, CheckOut = checkOut, GuestsID = guestsId, RoomNo = roomNo });
 
-                connection.Execute("dbo.AddBooking @CheckIn, @CheckOut, @GuestsID", bookings);
+                connection.Execute("dbo.AddBooking @CheckIn, @CheckOut, @GuestsID, @RoomNo", bookings);
 
             }
 
@@ -128,7 +128,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
 
 
                     TotalAmount totalAmount = new TotalAmount()
-                    {RoomPrice = roomPrice };
+                    { RoomPrice = roomPrice };
 
                     amounts.Add(totalAmount);
                 }
@@ -157,7 +157,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                     int servicePrice = (int)dataReader["Price"];
 
                     TotalAmount totalAmount = new TotalAmount()
-                    {ServicePrice = servicePrice };
+                    { ServicePrice = servicePrice };
 
                     amounts.Add(totalAmount);
                 }
@@ -177,7 +177,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             {
                 List<RoomQuantity> roomQuantities = new List<RoomQuantity>();
 
-                roomQuantities.Add(new RoomQuantity { BookingNo = bookingNo, RoomNo = roomNo});
+                roomQuantities.Add(new RoomQuantity { BookingNo = bookingNo, RoomNo = roomNo });
 
                 connection.Execute("dbo.AddRoomQuantity  @BookingNo,@RoomNo", roomQuantities);
 
@@ -200,7 +200,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             {
                 List<Guests> guests = new List<Guests>();
 
-                guests.Add(new Guests {ForeName = foreName, LastName = lastName, Address = address, Email = email, TelefonNo = telephoneNo, ZipCode = zipCode });
+                guests.Add(new Guests { ForeName = foreName, LastName = lastName, Address = address, Email = email, TelefonNo = telephoneNo, ZipCode = zipCode });
 
                 connection.Execute("dbo.AddNewGuests @Forename,@Lastname,@Address,@Email,@TelefonNo,@ZipCode", guests);
 
@@ -235,6 +235,35 @@ namespace ConsoleAppTestAfLandlystDBContionH2
 
             return bookings;
         }
+
+        public static List<Booking> GetRoomInUse(string ServiceYesOrNo/*, DateTime usrADate, DateTime usrLDate*/)
+        {
+            List<Booking> bookedRoomNo = new List<Booking>();
+
+            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
+            {
+                SqlCommand cmd;
+                connection.Open();
+
+                cmd = new SqlCommand($@"
+                select dbo.Booking.RoomNo from dbo.Booking
+                where Booking.CheckIn between '2020-05-01' and '2020-10-03'", connection);
+
+
+                SqlDataReader dataReader = cmd.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    int roomNo = (int)dataReader["RoomNo"];
+
+                    Booking room = new Booking()
+                    { RoomNo = roomNo };
+
+                    bookedRoomNo.Add(room);
+                }
+            }
+
+            return bookedRoomNo;
+        }
     }
 }
-

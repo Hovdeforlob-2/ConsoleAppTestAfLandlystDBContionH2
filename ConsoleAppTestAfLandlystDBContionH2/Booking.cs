@@ -17,6 +17,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         public DateTime CheckOut { get; set; }
 
         public int GuestsID { get; set; }
+        public int RoomNo { get; set; }
 
     }
 }
