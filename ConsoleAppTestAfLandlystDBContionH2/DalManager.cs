@@ -8,27 +8,20 @@ using Dapper;
 using System.Data;
 using System.Configuration;
 
-
-
 namespace ConsoleAppTestAfLandlystDBContionH2
 {
     public static class DalManager
     {
-        //private static string cs = @"Data Source=DATABASESEVER20;Initial Catalog=Test3;Persist Security Info=True;User ID=sa;Password=Kode123!";
-
-        public static List<Room> GetRooms(string ServiceYesOrNo, string service)
+        #region Gets From Databasen(DB)
+        public static List<Room> GetRooms(string ServiceYesOrNo, string service, DateTime usrADate, DateTime usrLDate)
         {
             List<Room> rooms = new List<Room>();
-            List<Booking> bookings = DalManager.GetRoomInUse(ServiceYesOrNo);
+            List<Booking> bookings = DalManager.GetRoomInUse(ServiceYesOrNo, usrADate, usrLDate);
 
             string contentsFromRoomUse = "";
             foreach (Booking item in bookings)
             {
                 contentsFromRoomUse = contentsFromRoomUse + "Room.RoomNo <> " + item.RoomNo;
-                //if (bookings.Count())
-                //{
-
-                //}
             }
 
             using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
@@ -41,18 +34,16 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                     select dbo.RoomServices.RoomNo, dbo.Room.Price from dbo.Room
                     join dbo.RoomServices
                     on dbo.Room.RoomNo = dbo.RoomServices.RoomNo
-                    where dbo.RoomServices.SerName = '{service}' and dbo.Room.Cleaned = 'true';", connection);
+                    where dbo.RoomServices.SerName = '{service}' and dbo.Room.Cleaned = 'true' and {contentsFromRoomUse};", connection);
                 }
                 else
                 {
-
-                        cmd = new SqlCommand($@"
-                        select RoomNo, Price from dbo.Room
-                        where dbo.Room.Cleaned = 'true' and {contentsFromRoomUse};", connection);
+                    cmd = new SqlCommand($@"
+                    select RoomNo, Price from dbo.Room
+                    where dbo.Room.Cleaned = 'true' and {contentsFromRoomUse};", connection);
                 }
 
                 SqlDataReader dataReader = cmd.ExecuteReader();
-
 
                 while (dataReader.Read())
                 {
@@ -66,59 +57,7 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                     rooms.Add(room);
                 }
             }
-
             return rooms;
-        }
-
-        public static List<Booking> GetBookings()
-        {
-            List<Booking> bookings = new List<Booking>();
-
-            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
-            {
-                connection.Open();
-
-                SqlCommand cmd = new SqlCommand("select * from Booking", connection);
-                SqlDataReader dataReader = cmd.ExecuteReader();
-
-                while (dataReader.Read())
-                {
-                    //BookingNo, CheckIn, CheckOut, GuestsID
-                    int bookingNo = (int)dataReader["BookingNo"];
-                    DateTime checkIn = (DateTime)dataReader["CheckIn"];
-                    DateTime checkOut = (DateTime)dataReader["CheckOut"];
-                    int GuestsId = (int)dataReader["GuestsID"];
-
-                    Booking booking = new Booking()
-                    { BookingNo = bookingNo, CheckIn = checkIn, CheckOut = checkOut, GuestsID = GuestsId };
-
-                    bookings.Add(booking);
-                }
-            }
-
-            return bookings;
-        }
-
-        /// <summary>
-        /// i denne metode bruger jeg dapper
-        /// BookingNo, CheckIn, CheckOut, GuestsID
-        /// </summary>
-        /// <param name="bookingNo"></param>
-        /// <param name="checkIn"></param>
-        /// <param name="checkOut"></param>
-        /// <param name="guestsId"></param>
-        public static void SetBookings(DateTime checkIn, DateTime checkOut, int guestsId, int roomNo)
-        {
-            using (IDbConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
-            {
-                List<Booking> bookings = new List<Booking>();
-
-                bookings.Add(new Booking { CheckIn = checkIn, CheckOut = checkOut, GuestsID = guestsId, RoomNo = roomNo });
-
-                connection.Execute("dbo.AddBooking @CheckIn, @CheckOut, @GuestsID, @RoomNo", bookings);
-
-            }
-
         }
 
         public static List<TotalAmount> GetRoomPrice(int roomNumber)
@@ -131,13 +70,11 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                 SqlCommand cmd = new SqlCommand($@"select Room.Price from Room
                 where RoomNo = {roomNumber}", connection);
 
-
                 SqlDataReader dataReader = cmd.ExecuteReader();
 
                 while (dataReader.Read())
                 {
                     int roomPrice = (int)dataReader["Price"];
-
 
                     TotalAmount totalAmount = new TotalAmount()
                     { RoomPrice = roomPrice };
@@ -145,7 +82,6 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                     amounts.Add(totalAmount);
                 }
             }
-
             return amounts;
         }
 
@@ -174,30 +110,40 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                     amounts.Add(totalAmount);
                 }
             }
-
             return amounts;
         }
 
-        /// <summary>
-        /// i denne metode bruger jeg dapper
-        /// </summary>
-        /// <param name="bookingNo"></param>
-        /// <param name="roomNo"></param>
-        public static void SetRoomQuantity(int bookingNo, int roomNo)
+        private static List<Booking> GetRoomInUse(string ServiceYesOrNo, DateTime usrADate, DateTime usrLDate)
         {
-            using (IDbConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
+            List<Booking> bookedRoomNo = new List<Booking>();
+
+            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {
-                List<RoomQuantity> roomQuantities = new List<RoomQuantity>();
+                SqlCommand cmd;
+                connection.Open();
 
-                roomQuantities.Add(new RoomQuantity { BookingNo = bookingNo, RoomNo = roomNo });
+                cmd = new SqlCommand($@"
+                select dbo.Booking.RoomNo from dbo.Booking
+                where Booking.CheckIn between '2020-05-01' and '2020-10-03';", connection);
 
-                connection.Execute("dbo.AddRoomQuantity  @BookingNo,@RoomNo", roomQuantities);
 
+                SqlDataReader dataReader = cmd.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    int roomNo = (int)dataReader["RoomNo"];
+
+                    Booking room = new Booking()
+                    { RoomNo = roomNo };
+
+                    bookedRoomNo.Add(room);
+                }
             }
-
+            return bookedRoomNo;
         }
+        #endregion
 
-
+        #region Sets to Databasen(DB)
         /// <summary>
         /// i denne metode bruger jeg dapper
         /// GuestsID, ForeName, LastName, Address, Email, TelephoneNo, ZipCode
@@ -217,65 +163,28 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                 connection.Execute("dbo.AddNewGuests @Forename,@Lastname,@Address,@Email,@TelefonNo,@ZipCode", guests);
 
             }
-
         }
 
-        public static List<Booking> GetDate(int bookingNo)
+        /// <summary>
+        /// i denne metode bruger jeg dapper
+        /// BookingNo, CheckIn, CheckOut, GuestsID
+        /// </summary>
+        /// <param name="bookingNo"></param>
+        /// <param name="checkIn"></param>
+        /// <param name="checkOut"></param>
+        /// <param name="guestsId"></param>
+        public static void SetBookings(DateTime checkIn, DateTime checkOut, int guestsId, int roomNo)
         {
-            List<Booking> bookings = new List<Booking>();
-
-            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
+            using (IDbConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {
-                connection.Open();
+                List<Booking> bookings = new List<Booking>();
 
-                SqlCommand cmd = new SqlCommand($@"select dbo.Booking.CheckIn, dbo.Booking.CheckOut from Booking 
-                where BookingNo = {bookingNo}", connection);
-                SqlDataReader dataReader = cmd.ExecuteReader();
+                bookings.Add(new Booking { CheckIn = checkIn, CheckOut = checkOut, GuestsID = guestsId, RoomNo = roomNo });
 
-                while (dataReader.Read())
-                {
-                    //BookingNo, CheckIn, CheckOut, GuestsID
-                    DateTime checkIn = (DateTime)dataReader["CheckIn"];
-                    DateTime checkOut = (DateTime)dataReader["CheckOut"];
+                connection.Execute("dbo.AddBooking @CheckIn, @CheckOut, @GuestsID, @RoomNo", bookings);
 
-                    Booking booking = new Booking()
-                    { CheckIn = checkIn, CheckOut = checkOut };
-
-                    bookings.Add(booking);
-                }
             }
-
-            return bookings;
         }
-
-        public static List<Booking> GetRoomInUse(string ServiceYesOrNo/*, DateTime usrADate, DateTime usrLDate*/)
-        {
-            List<Booking> bookedRoomNo = new List<Booking>();
-
-            using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
-            {
-                SqlCommand cmd;
-                connection.Open();
-
-                cmd = new SqlCommand($@"
-                select dbo.Booking.RoomNo from dbo.Booking
-                where Booking.CheckIn between '2020-05-01' and '2020-10-03'", connection);
-
-
-                SqlDataReader dataReader = cmd.ExecuteReader();
-
-                while (dataReader.Read())
-                {
-                    int roomNo = (int)dataReader["RoomNo"];
-
-                    Booking room = new Booking()
-                    { RoomNo = roomNo };
-
-                    bookedRoomNo.Add(room);
-                }
-            }
-
-            return bookedRoomNo;
-        }
+        #endregion
     }
 }

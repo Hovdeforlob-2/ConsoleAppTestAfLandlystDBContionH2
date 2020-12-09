@@ -57,7 +57,6 @@
     <Compile Include="Room.cs" />
     <Compile Include="HotelManager.cs" />
     <Compile Include="HotelService.cs" />
-    <Compile Include="RoomQuantity.cs" />
     <Compile Include="TotalAmount.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -16,7 +16,5 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         public string Email { get; set; }
         public int TelefonNo { get; set; }
         public int ZipCode { get; set; }
-
-
     }
 }

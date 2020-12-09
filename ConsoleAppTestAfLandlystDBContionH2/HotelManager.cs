@@ -8,14 +8,10 @@ namespace ConsoleAppTestAfLandlystDBContionH2
 {
     public static class HotelManager
     {
-        public static List<Room> GetRooms(string ServiceYesOrNo,string service)
+        #region Gets From DalManageer
+        public static List<Room> GetRooms(string ServiceYesOrNo,string service, DateTime usrADate, DateTime usrLDate)
         {
-            return DalManager.GetRooms(ServiceYesOrNo, service);
-        }
-
-        public static List<Booking> GetBookings()
-        {
-            return DalManager.GetBookings();
+            return DalManager.GetRooms(ServiceYesOrNo, service, usrADate, usrLDate);
         }
 
         public static List<TotalAmount> GetRoomPrice(int roomNo)
@@ -28,11 +24,18 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             return DalManager.GetServicesPrice(roomNo);
 
         }
+        #endregion
 
-        //public static List<RoomQuantity> SetRoomQuantities(int bookingNo, int roomNo)
-        //{
-        //    return DalManager.SetRoomQuantity(bookingNo, roomNo);
+        #region Gets stored procedures from DalManageer
+        public static void SetGuests(string foreName, string lastName, string address, string email, int telephoneNo, int zipCode)
+        {
+             DalManager.SetGuests( foreName, lastName, address, email, telephoneNo, zipCode);
+        }
 
-        //}
+        public static void SetBookings(DateTime checkIn, DateTime checkOut, int guestsId, int roomNo)
+        {
+            DalManager.SetBookings(checkIn, checkOut, guestsId, roomNo);
+        }
+        #endregion
     }
 }

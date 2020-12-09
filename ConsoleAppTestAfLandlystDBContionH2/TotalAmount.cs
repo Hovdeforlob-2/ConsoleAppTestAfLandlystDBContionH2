@@ -41,13 +41,11 @@ namespace ConsoleAppTestAfLandlystDBContionH2
             if (timeSpan.TotalDays >= 7)
             {
                 double PriceForRoom = CalculateAmount(usrRoomNo) * timeSpan.TotalDays;
-                //Console.WriteLine(Convert.ToDecimal(PriceForRoom) * (decimal.Divide(90, 100)));
                 decimal PriceWithProcentage = Convert.ToDecimal(PriceForRoom) * (decimal.Divide(90, 100));
                 return PriceWithProcentage;
             }
             else
             {
-                //Console.WriteLine(CalculateAmount(usrRoomNo) * timeSpan.TotalDays);
                 return Convert.ToDecimal(CalculateAmount(usrRoomNo) * timeSpan.TotalDays);
             }
         }
