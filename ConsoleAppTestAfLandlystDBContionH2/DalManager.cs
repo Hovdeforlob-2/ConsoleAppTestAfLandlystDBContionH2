@@ -19,6 +19,17 @@ namespace ConsoleAppTestAfLandlystDBContionH2
         public static List<Room> GetRooms(string ServiceYesOrNo, string service)
         {
             List<Room> rooms = new List<Room>();
+            List<Booking> bookings = DalManager.GetRoomInUse(ServiceYesOrNo);
+
+            string contentsFromRoomUse = "";
+            foreach (Booking item in bookings)
+            {
+                contentsFromRoomUse = contentsFromRoomUse + "Room.RoomNo <> " + item.RoomNo;
+                //if (bookings.Count())
+                //{
+
+                //}
+            }
 
             using (SqlConnection connection = new SqlConnection(DBconnection.connect("LandLystDB")))
             {
@@ -34,9 +45,10 @@ namespace ConsoleAppTestAfLandlystDBContionH2
                 }
                 else
                 {
-                    cmd = new SqlCommand(@"
-                    select RoomNo, Price from dbo.Room
-                    where dbo.Room.Cleaned = 'true';", connection);
+
+                        cmd = new SqlCommand($@"
+                        select RoomNo, Price from dbo.Room
+                        where dbo.Room.Cleaned = 'true' and {contentsFromRoomUse};", connection);
                 }
 
                 SqlDataReader dataReader = cmd.ExecuteReader();
